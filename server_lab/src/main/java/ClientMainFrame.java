@@ -59,8 +59,9 @@ public class ClientMainFrame extends JFrame {
                 int s = Integer.parseInt(secondAlarm.getText());
                 Alarm alarm = new Alarm(s, m, h);
 
-                String alarm_string = gson.toJson(alarm);
-                dos.writeUTF(alarm_string);
+
+               String alarm_string = gson.toJson(alarm);
+               dos.writeUTF(alarm_string);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -115,7 +116,7 @@ public class ClientMainFrame extends JFrame {
 
     void createAlarmDialog() {
         JOptionPane.showMessageDialog(this,
-                "The alarm clock " + Time.getText() + " is ringing!",
+                "The alarm clock is ringing!",
                 "Alarm",
                 JOptionPane.WARNING_MESSAGE);
     }

@@ -40,7 +40,9 @@ public class WCS extends Thread implements IObserver {
             dis = new DataInputStream(is);
 
             while (true) {
+                Resp r = new Resp();
                 String obj = dis.readUTF();
+
                 Alarm alarm = gson.fromJson(obj, Alarm.class);
                 server.clock.setAlarm(alarm);
                 model.addAlarm(alarm);

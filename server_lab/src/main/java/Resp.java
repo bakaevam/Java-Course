@@ -4,6 +4,7 @@ public class Resp {
     ArrayList<String> listAlarms = new ArrayList<String>();
     String time = "time";
     boolean alarmFlag;
+    Alarm newAlarm;
 
     public void addAlarm(String alarm) {
         listAlarms.add(alarm);

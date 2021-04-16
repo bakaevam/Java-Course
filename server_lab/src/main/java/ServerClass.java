@@ -20,6 +20,7 @@ public class ServerClass {
             e.printStackTrace();
         }
 
+
         try {
             ServerSocket ss = new ServerSocket(port, 0, host);
             setCurrentTime();

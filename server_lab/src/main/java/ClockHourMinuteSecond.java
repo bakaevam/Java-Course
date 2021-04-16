@@ -104,8 +104,10 @@ public class ClockHourMinuteSecond extends ClockHourMinute {
         Alarm tmp = null;
 
         for (Alarm alarm : alarms) {
-            flag = alarm.check(this);
-            tmp = alarm;
+            if(alarm.check(this)) {
+                flag = true;
+                tmp = alarm;
+            }
         }
         if (flag)
             alarms.remove(tmp);

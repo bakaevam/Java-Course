@@ -30,7 +30,7 @@ public class ClockHourMinute implements IClock {
     }
 
     public void setHour(int hour) throws Exception {
-        if(hour < 12 && hour >= 0) {
+        if(hour < 24 && hour >= 0) {
             this.hour = hour;
         } else {
             throw new Exception("Incorrect hour");
@@ -41,7 +41,7 @@ public class ClockHourMinute implements IClock {
         if(minute < 60 && minute >= 0) {
             this.minute = minute;
         } else {
-            throw new Exception("Incorrect minuter");
+            throw new Exception("Incorrect minute");
         }
     }
 
