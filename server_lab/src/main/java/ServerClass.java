@@ -20,6 +20,9 @@ public class ServerClass {
             e.printStackTrace();
         }
 
+        for(int i = 0; i < model.getAllAlarms().size(); i++) {
+            clock.setAlarm(model.getAllAlarms().get(i));
+        }
 
         try {
             ServerSocket ss = new ServerSocket(port, 0, host);

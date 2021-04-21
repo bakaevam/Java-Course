@@ -30,7 +30,7 @@ public class ClockHourMinuteSecond extends ClockHourMinute {
                                 ex.fillInStackTrace();
                             }
                             sleep(1000);
-                            System.out.println(hour + ":" + minute + ":" + second);
+                           // System.out.println(hour + ":" + minute + ":" + second);
                         } catch (InterruptedException ex) {
                             f1 = false;
                         }

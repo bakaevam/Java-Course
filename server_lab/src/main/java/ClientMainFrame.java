@@ -31,8 +31,8 @@ public class ClientMainFrame extends JFrame {
     private JTextField secondAlarm;
     private JPanel alarmPanel;
     private JLabel Time;
-    private JPanel AlarmList;
-    private JTextArea Alarms;
+    private DefaultListModel<String> listModel = new DefaultListModel<String>();
+    private JList listAlarms = new JList(listModel);
 
     public ClientMainFrame() {
         initComponents();
@@ -48,7 +48,7 @@ public class ClientMainFrame extends JFrame {
         setContentPane(rootPanel);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         Time.setFont(new Font("Serif", Font.PLAIN, 60));
-
+        alarmPanel.add(new JScrollPane(listAlarms));
     }
 
     private void createAlarm() {
@@ -122,9 +122,7 @@ public class ClientMainFrame extends JFrame {
     }
 
     void addAlarm(String alarm) {
-        String tmp = Alarms.getText();
-        tmp += alarm + '\n';
-        Alarms.setText(tmp);
+        listModel.addElement(alarm);
     }
 
     void newTime(String time) {

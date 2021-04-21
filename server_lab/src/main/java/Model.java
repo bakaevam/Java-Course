@@ -1,13 +1,22 @@
+import java.sql.*;
 import java.util.ArrayList;
 
 public class Model {
-    ArrayList<Alarm> allAlarms = new ArrayList<Alarm>();
+    ArrayList<Alarm> allAlarms;
     ArrayList<IObserver> allObservers = new ArrayList<IObserver>();
     String time = "time";
     boolean alarmFlag = false;
 
+    DBHandler dbHandler = DBHandler.getInstance();
+
     public void addAlarm(Alarm alarm) {
-        allAlarms.add(alarm);
+        //allAlarms.add(alarm);
+        dbHandler.saveAlarmToDB(alarm);
+        update();
+    }
+
+    public void deleteAlarm(Alarm alarm) {
+        dbHandler.deleteAlarmFromDB(alarm);
         update();
     }
 
@@ -18,7 +27,7 @@ public class Model {
     }
 
     public ArrayList<Alarm> getAllAlarms() {
-        return allAlarms;
+        return dbHandler.getListFromDB();
     }
 
     public void update() {
@@ -34,6 +43,7 @@ public class Model {
     }
 
     public Alarm last() {
+        allAlarms = getAllAlarms();
         return allAlarms.get(allAlarms.size() - 1);
     }
 
