@@ -4,8 +4,9 @@ import java.util.ArrayList;
 public class Model {
     ArrayList<Alarm> allAlarms;
     ArrayList<IObserver> allObservers = new ArrayList<IObserver>();
-    String time = "time";
+    String time = "9:10:59";
     boolean alarmFlag = false;
+    int idxDelete;
 
     DBHandler dbHandler = DBHandler.getInstance();
 
@@ -15,9 +16,16 @@ public class Model {
         update();
     }
 
-    public void deleteAlarm(Alarm alarm) {
+    public void deleteAlarm(Alarm alarm, int idx) {
         dbHandler.deleteAlarmFromDB(alarm);
-        update();
+        idxDelete = idx;
+        updateDelete();
+    }
+
+    public void deleteAlarmAfterRinging(Alarm alarm, int idx) {
+        dbHandler.deleteAlarmFromDB(alarm);
+        idxDelete = idx;
+        updateDeleteAfterRinging();
     }
 
     public void addTime(String string, boolean flag) {
@@ -39,6 +47,18 @@ public class Model {
     public void updateTime() {
         for (IObserver observer : allObservers) {
             observer.updateTime(this);
+        }
+    }
+
+    public void updateDelete() {
+        for (IObserver observer : allObservers) {
+            observer.updateAfterDelete(this);
+        }
+    }
+
+    public void updateDeleteAfterRinging() {
+        for (IObserver observer : allObservers) {
+            observer.updateAfterRinging(this);
         }
     }
 

@@ -40,15 +40,26 @@ public class WCS extends Thread implements IObserver {
             dis = new DataInputStream(is);
 
             while (true) {
-                Resp r = new Resp();
                 String obj = dis.readUTF();
+                Request r = gson.fromJson(obj, Request.class);
+                if (r.state == AlarmState.CREATE) {
+                    System.out.println("WCS CREATE");
+                    server.clock.setAlarm(r.alarm);
+                    model.addAlarm(r.alarm);
+                }
 
-                Alarm alarm = gson.fromJson(obj, Alarm.class);
-                server.clock.setAlarm(alarm);
-                model.addAlarm(alarm);
+                if (r.state == AlarmState.DELETE) {
+                    System.out.println("WCS DELETE");
+                    if (!r.deleteFromDB) {
+                        model.deleteAlarm(r.alarm, r.idxDelete);
+                        server.clock.deleteAlarm(r.alarm);
+                    } else {
+                        model.deleteAlarmAfterRinging(r.alarm, r.idxDelete);
+                    }
+                }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+           // e.printStackTrace();
         }
     }
 
@@ -60,6 +71,31 @@ public class WCS extends Thread implements IObserver {
         sendTime(model.time, model.alarmFlag);
     }
 
+    public void updateAfterDelete(Model model) {
+        try {
+            Resp r = new Resp();
+            r.setIdNeededDelete(true);
+            r.setIdxDeleteAlarm(model.idxDelete);
+            String deleteAlarmString = gson.toJson(r);
+
+            dos.writeUTF(deleteAlarmString);
+        } catch (IOException e) {
+           // e.printStackTrace();
+        }
+    }
+
+    public void updateAfterRinging(Model model) {
+        try {
+            Resp r = new Resp();
+            r.setIdxDeleteAlarm(model.idxDelete);
+            String deleteAlarmString = gson.toJson(r);
+
+            dos.writeUTF(deleteAlarmString);
+        } catch (IOException e) {
+            // e.printStackTrace();
+        }
+    }
+
     public void send(Alarm alarm) {
         try {
             Resp r = new Resp();
@@ -68,7 +104,7 @@ public class WCS extends Thread implements IObserver {
 
             dos.writeUTF(alarm_string);
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 
@@ -81,7 +117,7 @@ public class WCS extends Thread implements IObserver {
             String time_string = gson.toJson(r);
             dos.writeUTF(time_string);
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 
@@ -95,7 +131,7 @@ public class WCS extends Thread implements IObserver {
             String alarm_string = gson.toJson(r);
             dos.writeUTF(alarm_string);
         } catch (IOException e) {
-            e.printStackTrace();
+           // e.printStackTrace();
         }
     }
 }

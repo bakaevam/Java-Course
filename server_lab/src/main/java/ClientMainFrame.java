@@ -31,8 +31,11 @@ public class ClientMainFrame extends JFrame {
     private JTextField secondAlarm;
     private JPanel alarmPanel;
     private JLabel Time;
+    private JPanel alarmListPanel;
     private DefaultListModel<String> listModel = new DefaultListModel<String>();
     private JList listAlarms = new JList(listModel);
+    private JButton deleteAlarmButton = new JButton("Удалить");
+    private JPanel buttonPanel = new JPanel();
 
     public ClientMainFrame() {
         initComponents();
@@ -44,11 +47,70 @@ public class ClientMainFrame extends JFrame {
         });
     }
 
+    Alarm fromStringToAlarm(String str) {
+        int h = Integer.parseInt(str.substring(0, str.indexOf(':')));
+        int m = Integer.parseInt(str.substring(str.indexOf(':') + 1, str.lastIndexOf(':')));
+        int s = Integer.parseInt(str.substring(str.lastIndexOf(':') + 1));
+
+        return new Alarm(s, m, h);
+    }
+
+    void deleteAlarm(int idx) {
+        System.out.println("DELETE ALARM IDX " + idx);
+        String alarmStr = listModel.get(idx);
+        Alarm deleteAlarm = fromStringToAlarm(alarmStr);
+        System.out.println(deleteAlarm + " DELETE");
+        // Delete from db and clock
+        try {
+            Request r = new Request();
+            r.setAlarm(deleteAlarm);
+            r.setState(AlarmState.DELETE);
+            r.setIdxDelete(idx);
+            r.setDeleteFromDB(false);
+            String alarm_delete = gson.toJson(r);
+            dos.writeUTF(alarm_delete);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void deleteAlarmAfterRinging(int idx) {
+        System.out.println("DELETE ALARM IDX " + idx);
+        String alarmStr = listModel.get(idx);
+        Alarm deleteAlarm = fromStringToAlarm(alarmStr);
+        System.out.println(deleteAlarm + " DELETE");
+        // Delete from db and clock
+        try {
+            Request r = new Request();
+            r.setAlarm(deleteAlarm);
+            r.setState(AlarmState.DELETE);
+            r.setIdxDelete(idx);
+            r.setDeleteFromDB(true);
+            String alarm_delete = gson.toJson(r);
+            dos.writeUTF(alarm_delete);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void initComponents() {
         setContentPane(rootPanel);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         Time.setFont(new Font("Serif", Font.PLAIN, 60));
-        alarmPanel.add(new JScrollPane(listAlarms));
+        alarmListPanel.setLayout(new BorderLayout(10, 10));
+        alarmListPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        alarmListPanel.add(new JScrollPane(listAlarms));
+        buttonPanel.setLayout(new GridLayout(1,1,5, 0));
+        alarmListPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        deleteAlarmButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deleteAlarm(listAlarms.getSelectedIndex());
+            }
+        });
+
+        buttonPanel.add(deleteAlarmButton);
     }
 
     private void createAlarm() {
@@ -59,9 +121,11 @@ public class ClientMainFrame extends JFrame {
                 int s = Integer.parseInt(secondAlarm.getText());
                 Alarm alarm = new Alarm(s, m, h);
 
-
-               String alarm_string = gson.toJson(alarm);
-               dos.writeUTF(alarm_string);
+                Request r = new Request();
+                r.setAlarm(alarm);
+                r.setState(AlarmState.CREATE);
+                String alarm_create = gson.toJson(r);
+                dos.writeUTF(alarm_create);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -71,6 +135,7 @@ public class ClientMainFrame extends JFrame {
     private void connect() {
         try {
             host = InetAddress.getLocalHost();
+            System.out.println(host);
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
@@ -98,7 +163,13 @@ public class ClientMainFrame extends JFrame {
                             }
 
                             if (r.alarmFlag) {
+                                deleteAlarmAfterRinging(listModel.indexOf(r.time));
+                                listModel.removeElement(r.time);
                                 createAlarmDialog();
+                            }
+
+                            if (r.idNeededDelete) {
+                                listModel.remove(r.idxDeleteAlarm);
                             }
                         }
                     } catch (UnknownHostException e) {

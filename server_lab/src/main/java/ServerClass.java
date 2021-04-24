@@ -61,7 +61,7 @@ public class ServerClass {
                     try {
                         model.addTime(clock.toString(), clock.checkAlarms());
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        //e.printStackTrace();
                     }
                 }
             }

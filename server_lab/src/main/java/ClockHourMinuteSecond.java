@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class ClockHourMinuteSecond extends ClockHourMinute {
     int second = 0;
@@ -97,6 +98,14 @@ public class ClockHourMinuteSecond extends ClockHourMinute {
 
     public void setAlarm(Alarm alarm) {
         alarms.add(alarm);
+    }
+
+    public void deleteAlarm(Alarm alarm) {
+        System.out.println(alarms);
+        System.out.println("IDX " + alarms.indexOf(alarm));
+        if (!alarms.contains(alarm)) return;
+        alarms.remove(alarm);
+        System.out.println(alarms);
     }
 
     public boolean checkAlarms() {

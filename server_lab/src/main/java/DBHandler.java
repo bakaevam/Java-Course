@@ -37,7 +37,7 @@ public class DBHandler {
             while (res.next()) {
                 Alarm a = new Alarm(res.getInt("second"),
                         res.getInt("minute"), res.getInt("hour"));
-                System.out.println(a);
+               // System.out.println(a);
                 resList.add(a);
             }
         } catch (SQLException ex) {
@@ -65,7 +65,7 @@ public class DBHandler {
     public void deleteAlarmFromDB(Alarm alarm) {
         try {
             PreparedStatement pst =
-                    connection.prepareStatement("delete from alarms where hour = ?, minute = ?, second = ?");
+                    connection.prepareStatement("delete from alarms where hour = ? and minute = ? and second = ?");
             pst.setObject(1, alarm.hh);
             pst.setObject(2, alarm.mm);
             pst.setObject(3, alarm.ss);
